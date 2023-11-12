@@ -5,9 +5,6 @@ import ru.practicum.shareit.user.dto.UserDto;
 
 import java.time.LocalDateTime;
 
-/**
- * TODO Sprint add-item-requests.
- */
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

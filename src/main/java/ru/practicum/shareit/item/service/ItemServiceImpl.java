@@ -27,11 +27,6 @@ public class ItemServiceImpl implements ItemService {
     private final ItemMapper itemMapper;
     private final UserRepository userRepository;
 
-    /**
-     * @param itemDto 
-     * @param userId
-     * @return
-     */
     @Override
     public ItemDto createItem(ItemDto itemDto, Long userId) {
         User user = userRepository.getUser(userId)
@@ -42,31 +37,17 @@ public class ItemServiceImpl implements ItemService {
         return itemMapper.toItemDto(itemRepository.addItem(item));
     }
 
-    /**
-     * @param itemId 
-     * @param userId
-     * @return
-     */
     @Override
     public ItemDto getItem(Long itemId, Long userId) {
         return itemMapper.toItemDto(itemRepository.getItem(itemId)
                 .orElseThrow(() -> new ItemNotFoundException("Попытка получить несуществующую вещь")));
     }
 
-    /**
-     * @param userId 
-     * @return
-     */
     @Override
     public List<ItemDto> findItemsByUser(Long userId) {
         return itemRepository.findItemsByUser(userId).stream().map(itemMapper::toItemDto).collect(Collectors.toList());
     }
 
-    /**
-     * @param text 
-     * @param userId
-     * @return
-     */
     @Override
     public List<ItemDto> findItemsByText(String text, Long userId) {
         userRepository.getUser(userId)
@@ -75,12 +56,6 @@ public class ItemServiceImpl implements ItemService {
         return itemRepository.findItemsByText(text).stream().map(itemMapper::toItemDto).collect(Collectors.toList());
     }
 
-    /**
-     * @param itemId 
-     * @param itemDto
-     * @param userId
-     * @return
-     */
     @Override
     public ItemDto updateItem(Long itemId, ItemDto itemDto, Long userId) {
         userRepository.getUser(userId)

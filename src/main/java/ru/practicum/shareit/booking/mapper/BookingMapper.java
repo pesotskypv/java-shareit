@@ -6,7 +6,7 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.user.mapper.UserMapper;
 
-@Mapper(componentModel = "spring",
+@Mapper(componentModel = org.mapstruct.MappingConstants.ComponentModel.SPRING,
         uses = {ItemMapper.class, UserMapper.class})
 public interface BookingMapper {
 

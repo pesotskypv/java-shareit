@@ -21,10 +21,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-    /**
-     * @param userDto
-     * @return
-     */
     @Override
     public UserDto createUser(UserDto userDto) {
         checkFreeEmail(userDto);
@@ -32,29 +28,17 @@ public class UserServiceImpl implements UserService {
         return userMapper.toUserDto(userRepository.createUser(userMapper.toUser(userDto)));
     }
 
-    /**
-     * @param id
-     * @return
-     */
     @Override
     public UserDto getUser(Long id) {
         return userMapper.toUserDto(userRepository.getUser(id)
                 .orElseThrow(() -> new UserNotFoundException("Попытка получить несуществующего пользователя")));
     }
 
-    /**
-     * @return
-     */
     @Override
     public List<UserDto> findAllUsers() {
         return userRepository.findAllUsers().stream().map(userMapper::toUserDto).collect(Collectors.toList());
     }
 
-    /**
-     * @param id
-     * @param userDto
-     * @return
-     */
     @Override
     public UserDto updateUser(Long id, UserDto userDto) {
         userRepository.getUser(id)
@@ -84,17 +68,11 @@ public class UserServiceImpl implements UserService {
         return userMapper.toUserDto(userRepository.updateUser(userMapper.toUser(userDto)));
     }
 
-    /**
-     * @param id 
-     */
     @Override
     public void deleteUser(Long id) {
         userRepository.deleteUser(id);
     }
 
-    /**
-     * @param userDto
-     */
     private void checkFreeEmail(UserDto userDto) {
         if (userRepository.findAllUsers().stream()
                 .filter(u -> !u.getId().equals(userDto.getId()))

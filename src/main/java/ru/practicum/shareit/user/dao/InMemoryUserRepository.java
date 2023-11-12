@@ -13,10 +13,6 @@ public class InMemoryUserRepository implements UserRepository {
     private final Map<Long, User> users = new HashMap<>();
     private Long idCounter = 0L;
 
-    /**
-     * @param user 
-     * @return
-     */
     @Override
     public User createUser(User user) {
         final Long newId = ++idCounter;
@@ -28,10 +24,6 @@ public class InMemoryUserRepository implements UserRepository {
         return user;
     }
 
-    /**
-     * @param id
-     * @return
-     */
     @Override
     public Optional<User> getUser(Long id) {
         Optional<User> user = Optional.ofNullable(users.get(id));
@@ -40,9 +32,6 @@ public class InMemoryUserRepository implements UserRepository {
         return user;
     }
 
-    /**
-     * @return 
-     */
     @Override
     public List<User> findAllUsers() {
         List<User> foundUsers = Collections.emptyList();
@@ -55,10 +44,6 @@ public class InMemoryUserRepository implements UserRepository {
         return foundUsers;
     }
 
-    /**
-     * @param user
-     * @return
-     */
     @Override
     public User updateUser(User user) {
         User updatedUser = users.get(user.getId());
@@ -76,9 +61,6 @@ public class InMemoryUserRepository implements UserRepository {
         return updatedUser;
     }
 
-    /**
-     * @param id
-     */
     @Override
     public void deleteUser(Long id) {
         users.remove(id);

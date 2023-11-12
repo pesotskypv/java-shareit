@@ -6,7 +6,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.mapper.ItemRequestMapper;
 import ru.practicum.shareit.user.mapper.UserMapper;
 
-@Mapper(componentModel = "spring",
+@Mapper(componentModel = org.mapstruct.MappingConstants.ComponentModel.SPRING,
         uses = {UserMapper.class, ItemRequestMapper.class})
 public interface ItemMapper {
 

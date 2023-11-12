@@ -11,6 +11,8 @@ public interface ItemRepository {
 
     Optional<Item> getItem(Long id);
 
+    List<Item> findAllItems(Long id);
+
     List<Item> findItemsByUser(Long id);
 
     List<Item> findItemsByText(String text);

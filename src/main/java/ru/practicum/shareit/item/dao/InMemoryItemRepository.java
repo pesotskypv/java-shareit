@@ -14,10 +14,6 @@ public class InMemoryItemRepository implements ItemRepository {
     private final Map<Long, Item> items = new HashMap<>();
     private Long idCounter = 0L;
 
-    /**
-     * @param item 
-     * @return
-     */
     @Override
     public Item addItem(Item item) {
         final Long newId = ++idCounter;
@@ -29,10 +25,6 @@ public class InMemoryItemRepository implements ItemRepository {
         return item;
     }
 
-    /**
-     * @param id 
-     * @return
-     */
     @Override
     public Optional<Item> getItem(Long id) {
         Optional<Item> item = Optional.ofNullable(items.get(id));
@@ -41,10 +33,18 @@ public class InMemoryItemRepository implements ItemRepository {
         return item;
     }
 
-    /**
-     * @param id 
-     * @return
-     */
+    @Override
+    public List<Item> findAllItems(Long id) {
+        List<Item> foundItems = Collections.emptyList();
+
+        if (!items.isEmpty()) {
+            foundItems = new ArrayList<>(items.values());
+        }
+        log.info("Вещи items={} получены из InMemoryItemRepository", items);
+
+        return foundItems;
+    }
+
     @Override
     public List<Item> findItemsByUser(Long id) {
         List<Item> items = this.items.values().stream()
@@ -55,9 +55,6 @@ public class InMemoryItemRepository implements ItemRepository {
         return items;
     }
 
-    /**
-     * @return 
-     */
     @Override
     public List<Item> findItemsByText(String text) {
         List<Item> items = Collections.emptyList();
@@ -74,10 +71,6 @@ public class InMemoryItemRepository implements ItemRepository {
         return items;
     }
 
-    /**
-     * @param item 
-     * @return
-     */
     @Override
     public Item updateItem(Item item) {
         Item updatedItem = items.get(item.getId());

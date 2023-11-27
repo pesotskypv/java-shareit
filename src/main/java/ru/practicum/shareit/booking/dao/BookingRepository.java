@@ -23,41 +23,41 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("SELECT b " +
             "FROM Booking b " +
-            "LEFT JOIN Item i ON b.item = i.id " +
-            "LEFT JOIN User u ON i.owner = u.id " +
-            "WHERE u.id = ?1 " +
+            "JOIN Item i ON b.item = i.id " +
+            "JOIN User u ON i.owner = u.id " +
+            "WHERE u.id = :userId " +
             "ORDER BY b.start DESC")
     List<Booking> findAllBookingsForAllItemsByUserId(Long userId);
 
     @Query("SELECT b " +
             "FROM Booking b " +
-            "LEFT JOIN Item i ON b.item = i.id " +
-            "LEFT JOIN User u ON i.owner = u.id " +
-            "WHERE u.id = ?1 AND ?2 BETWEEN b.start AND b.end " +
+            "JOIN Item i ON b.item = i.id " +
+            "JOIN User u ON i.owner = u.id " +
+            "WHERE u.id = :userId AND :now BETWEEN b.start AND b.end " +
             "ORDER BY b.start DESC")
     List<Booking> findCurrentBookingsForAllItemsByUserId(Long userId, LocalDateTime now);
 
     @Query("SELECT b " +
             "FROM Booking b " +
-            "LEFT JOIN Item i ON b.item = i.id " +
-            "LEFT JOIN User u ON i.owner = u.id " +
-            "WHERE u.id = ?1 AND b.end < ?2 " +
+            "JOIN Item i ON b.item = i.id " +
+            "JOIN User u ON i.owner = u.id " +
+            "WHERE u.id = :userId AND b.end < :now " +
             "ORDER BY b.start DESC")
     List<Booking> findPastBookingsForAllItemsByUserId(Long userId, LocalDateTime now);
 
     @Query("SELECT b " +
             "FROM Booking b " +
-            "LEFT JOIN Item i ON b.item = i.id " +
-            "LEFT JOIN User u ON i.owner = u.id " +
-            "WHERE u.id = ?1 AND b.start > ?2 " +
+            "JOIN Item i ON b.item = i.id " +
+            "JOIN User u ON i.owner = u.id " +
+            "WHERE u.id = :userId AND b.start > :now " +
             "ORDER BY b.start DESC")
     List<Booking> findFutureBookingsForAllItemsByUserId(Long userId, LocalDateTime now);
 
     @Query("SELECT b " +
             "FROM Booking b " +
-            "LEFT JOIN Item i ON b.item = i.id " +
-            "LEFT JOIN User u ON i.owner = u.id " +
-            "WHERE u.id = ?1 AND b.status = ?2 " +
+            "JOIN Item i ON b.item = i.id " +
+            "JOIN User u ON i.owner = u.id " +
+            "WHERE u.id = :userId AND b.status = :bookingStatus " +
             "ORDER BY b.start DESC")
     List<Booking> findStatusBookingsForAllItemsByUserId(Long userId, BookingStatus bookingStatus);
 

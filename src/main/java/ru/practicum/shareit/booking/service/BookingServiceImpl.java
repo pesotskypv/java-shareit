@@ -54,9 +54,9 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto approveOrRejectBooking(Long bookingId, Boolean approved, Long userId) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Попытка подтверждения или отклонения запроса на " +
-                        "бронирование несуществующим пользователем"));
+        if(!userRepository.existsById(userId))
+            throw new EntityNotFoundException("Попытка подтверждения или отклонения запроса на бронирование " +
+                    "несуществующим пользователем");
 
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new EntityNotFoundException("Попытка подтверждения или отклонения несуществующего " +
@@ -81,9 +81,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto getBookingById(Long bookingId, Long userId) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Попытка получения данных о бронировании " +
-                        "несуществующим пользователем"));
+        if(!userRepository.existsById(userId))
+            throw new EntityNotFoundException("Попытка получения данных о бронировании несуществующим пользователем");
 
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new EntityNotFoundException("Попытка получения данных о несуществующем " +
@@ -97,9 +96,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getAllBookingsByUserId(String state, Long userId) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Попытка получения данных о бронировании " +
-                        "несуществующим пользователем"));
+        if(!userRepository.existsById(userId))
+            throw new EntityNotFoundException("Попытка получения данных о бронировании несуществующим пользователем");
 
         switch (state) {
             case "ALL":
@@ -128,9 +126,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getAllBookingsForAllItemsByUserId(String state, Long userId) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Попытка получения данных о бронировании " +
-                        "несуществующим пользователем"));
+        if(!userRepository.existsById(userId))
+            throw new EntityNotFoundException("Попытка получения данных о бронировании несуществующим пользователем");
 
         switch (state) {
             case "ALL":

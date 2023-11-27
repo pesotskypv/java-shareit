@@ -81,17 +81,17 @@ public class InMemoryUserRepository implements UserRepository {
 
     @Override
     public List<User> findAll(Sort sort) {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
     public Page<User> findAll(Pageable pageable) {
-        return null;
+        return (Page<User>) new User();
     }
 
     @Override
     public List<User> findAllById(Iterable<Long> longs) {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
@@ -101,7 +101,7 @@ public class InMemoryUserRepository implements UserRepository {
 
     @Override
     public <S extends User> List<S> saveAll(Iterable<S> entities) {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
@@ -116,7 +116,7 @@ public class InMemoryUserRepository implements UserRepository {
 
     @Override
     public <S extends User> List<S> saveAllAndFlush(Iterable<S> entities) {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
@@ -156,17 +156,17 @@ public class InMemoryUserRepository implements UserRepository {
 
     @Override
     public <S extends User> List<S> findAll(Example<S> example) {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
     public <S extends User> List<S> findAll(Example<S> example, Sort sort) {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
     public <S extends User> Page<S> findAll(Example<S> example, Pageable pageable) {
-        return null;
+        return (Page<S>) new User();
     }
 
     @Override

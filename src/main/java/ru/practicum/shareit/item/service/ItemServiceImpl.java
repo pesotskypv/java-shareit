@@ -53,8 +53,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDtoOwner getItem(Long userId, Long itemId) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Попытка получить вещь несуществующим владельцем"));
+        if(!userRepository.existsById(userId))
+            throw new EntityNotFoundException("Попытка получить вещь несуществующим владельцем");
 
         List<Comment> comments = commentRepository.findAllByItemId(itemId);
 
@@ -90,8 +90,8 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDto> findItemsByText(Long userId, String text) {
         List<ItemDto> itemDtos = Collections.emptyList();
 
-        userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Попытка поиска вещи несуществующим пользователем"));
+        if(!userRepository.existsById(userId))
+            throw new EntityNotFoundException("Попытка поиска вещи несуществующим пользователем");
 
         if (!text.isBlank())
             itemDtos = itemRepository.findItemsByText(text).stream()
@@ -102,9 +102,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto updateItem(Long userId, Long itemId, ItemDto itemDto) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Попытка отредактировать вещь несуществующим " +
-                        "владельцем"));
+        if(!userRepository.existsById(userId))
+            throw new EntityNotFoundException("Попытка отредактировать вещь несуществующим владельцем");
+
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new EntityNotFoundException("Попытка отредактировать несуществующую вещь"));
 

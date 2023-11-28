@@ -9,6 +9,7 @@ import ru.practicum.shareit.user.dto.UpdateUserValidation;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
 
+import javax.validation.constraints.Positive;
 import java.util.List;
 
 @Slf4j
@@ -27,7 +28,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public UserDto getUser(@PathVariable Long userId) {
+    public UserDto getUser(@PathVariable @Positive Long userId) {
         log.info("Получен GET-запрос /users/{}", userId);
 
         return userService.getUser(userId);
@@ -41,7 +42,7 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}")
-    public UserDto updateUser(@PathVariable Long userId,
+    public UserDto updateUser(@PathVariable @Positive Long userId,
                               @Validated(value = {UpdateUserValidation.class}) @RequestBody UserDto userDto) {
         log.info("Получен PATCH-запрос /users/{} с телом={}", userId, userDto);
 
@@ -49,7 +50,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    public void deleteUser(@PathVariable Long userId) {
+    public void deleteUser(@PathVariable @Positive Long userId) {
         log.info("Получен DELETE-запрос /users/{}", userId);
         userService.deleteUser(userId);
     }

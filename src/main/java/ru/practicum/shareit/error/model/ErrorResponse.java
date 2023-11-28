@@ -1,4 +1,4 @@
-package ru.practicum.shareit.errorResponse.model;
+package ru.practicum.shareit.error.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

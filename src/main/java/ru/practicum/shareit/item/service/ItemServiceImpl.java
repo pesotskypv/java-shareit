@@ -76,16 +76,14 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDtoOwn> findItemsByUser(Long userId, Integer offset, Integer limit) {
-        List<ItemDtoOwn> itemsDtoOwner = itemRepository.findItemsByOwnerId(userId).stream().map(i ->
+    public List<ItemDtoOwn> findItemsByUser(Long userId) {
+        return itemRepository.findItemsByOwnerId(userId).stream().map(i ->
                 itemMapper.toItemDtoOwner(i, commentRepository.findAllByItemId(i.getId())))
                 .peek(this::addLastAndNextBookingsToItemDtoOwner).collect(Collectors.toList());
-
-        return itemsDtoOwner.subList(offset, Math.min((offset + limit), itemsDtoOwner.size()));
     }
 
     @Override
-    public List<ItemDto> findItemsByText(Long userId, String text, Integer offset, Integer limit) {
+    public List<ItemDto> findItemsByText(Long userId, String text) {
         List<ItemDto> itemDtos = Collections.emptyList();
 
         if(!userRepository.existsById(userId))
@@ -95,7 +93,7 @@ public class ItemServiceImpl implements ItemService {
             itemDtos = itemRepository.findItemsByText(text).stream()
                     .map(itemMapper::toItemDto).collect(Collectors.toList());
 
-        return itemDtos.subList(offset, Math.min((offset + limit), itemDtos.size()));
+        return itemDtos;
     }
 
     @Override

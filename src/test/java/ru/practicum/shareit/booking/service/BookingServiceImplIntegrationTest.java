@@ -239,8 +239,7 @@ public class BookingServiceImplIntegrationTest {
                 .build();
         em.persist(bookingLast);
 
-        List<BookingDto> actualBookingsDto = bookingService.getAllBookingsByUserId("ALL", 0, 2,
-                user1.getId());
+        List<BookingDto> actualBookingsDto = bookingService.getAllBookingsByUserId("ALL", user1.getId());
 
         assertThat(actualBookingsDto.get(0).getId(), notNullValue());
         assertThat(actualBookingsDto.get(0).getStart(), equalTo(bookingLast.getStart()));
@@ -294,7 +293,7 @@ public class BookingServiceImplIntegrationTest {
                 .build();
         em.persist(bookingLast);
 
-        List<BookingDto> actualBookingsDto = bookingService.getAllBookingsForAllItemsByUserId("ALL", 0, 2,
+        List<BookingDto> actualBookingsDto = bookingService.getAllBookingsForAllItemsByUserId("ALL",
                 user2.getId());
 
         assertThat(actualBookingsDto.get(0).getId(), notNullValue());

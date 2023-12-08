@@ -6,10 +6,12 @@ import ru.practicum.shareit.user.dto.UserDto;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
-@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
+@ToString
 public class ItemRequestDto {
 
     private Long id;

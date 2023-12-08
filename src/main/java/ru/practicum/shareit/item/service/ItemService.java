@@ -13,9 +13,9 @@ public interface ItemService {
 
     ItemDtoOwn getItem(Long userId, Long itemId);
 
-    List<ItemDtoOwn> findItemsByUser(Long userId, Integer from, Integer size);
+    List<ItemDtoOwn> findItemsByUser(Long userId);
 
-    List<ItemDto> findItemsByText(Long userId, String text, Integer from, Integer size);
+    List<ItemDto> findItemsByText(Long userId, String text);
 
     ItemDto updateItem(Long userId, Long itemId, ItemDto itemDto);
 

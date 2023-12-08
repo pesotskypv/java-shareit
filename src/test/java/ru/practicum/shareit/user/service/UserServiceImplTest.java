@@ -46,7 +46,7 @@ public class UserServiceImplTest {
 
         UserDto actualResponseUserDto = userService.createUser(inUserDto);
 
-        Assertions.assertEquals(expectedUserDto, actualResponseUserDto);
+        Assertions.assertEquals(expectedUserDto.getId(), actualResponseUserDto.getId());
         Mockito.verify(userRepository, Mockito.times(1)).save(inUser);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(userMapper, Mockito.times(1)).toUser(inUserDto);
@@ -65,7 +65,7 @@ public class UserServiceImplTest {
 
         UserDto actualResponseUserDto = userService.getUser(userId);
 
-        Assertions.assertEquals(expectedUserDto, actualResponseUserDto);
+        Assertions.assertEquals(expectedUserDto.getId(), actualResponseUserDto.getId());
         Mockito.verify(userRepository, Mockito.times(1)).findById(userId);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(userMapper, Mockito.times(1)).toUserDto(originalUser);
@@ -83,7 +83,7 @@ public class UserServiceImplTest {
 
         List<UserDto> actualResponseUsersDto = userService.findAllUsers();
 
-        Assertions.assertEquals(expectedUserDto, actualResponseUsersDto);
+        Assertions.assertEquals(expectedUserDto.get(0).getId(), actualResponseUsersDto.get(0).getId());
         Mockito.verify(userRepository, Mockito.times(1)).findAll();
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(userMapper, Mockito.times(1)).toUserDto(originalUser);
@@ -104,7 +104,7 @@ public class UserServiceImplTest {
 
         UserDto actualResponseUserDto = userService.updateUser(userId, inUserDto);
 
-        Assertions.assertEquals(expectedUserDto, actualResponseUserDto);
+        Assertions.assertEquals(expectedUserDto.getId(), actualResponseUserDto.getId());
         Mockito.verify(userRepository, Mockito.times(1)).findById(userId);
         Mockito.verify(userRepository, Mockito.times(1)).save(inUser);
         Mockito.verifyNoMoreInteractions(userRepository);

@@ -119,7 +119,7 @@ public class ItemServiceImplIntegrationTest {
         Comment comment = Comment.builder().text("Ком").item(item).author(dbUser1).created(LocalDateTime.now()).build();
         em.persist(comment);
 
-        List<ItemDtoOwn> actualOutItemsDtoOwn = itemService.findItemsByUser(dbUser2.getId(), 0, 2);
+        List<ItemDtoOwn> actualOutItemsDtoOwn = itemService.findItemsByUser(dbUser2.getId());
 
         assertThat(actualOutItemsDtoOwn.size(), equalTo(1));
         assertThat(actualOutItemsDtoOwn.get(0).getId(), notNullValue());
@@ -255,7 +255,7 @@ public class ItemServiceImplIntegrationTest {
         assertThat(actualCommentDto.getAuthorName(), equalTo(user1.getName()));
         assertThat(actualCommentDto.getCreated(), notNullValue());
 
-        List<ItemDtoOwn> actualOutItemsDtoOwn = itemService.findItemsByUser(dbUser2.getId(), 0, 2);
+        List<ItemDtoOwn> actualOutItemsDtoOwn = itemService.findItemsByUser(dbUser2.getId());
 
         assertThat(actualOutItemsDtoOwn.size(), equalTo(1));
         assertThat(actualOutItemsDtoOwn.get(0).getId(), notNullValue());

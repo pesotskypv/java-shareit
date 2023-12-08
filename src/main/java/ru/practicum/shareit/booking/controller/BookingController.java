@@ -55,7 +55,9 @@ public class BookingController {
             @RequestHeader(name = "X-Sharer-User-Id") @Positive Long userId) {
         log.info("Получен GET-запрос /bookings?state={}&from={}&size={} с userId={}", state, from, size, userId);
 
-        return bookingService.getAllBookingsByUserId(state, from, size, userId);
+        List<BookingDto> bookingsDto = bookingService.getAllBookingsByUserId(state, userId);
+
+        return bookingsDto.subList(from, Math.min((from + size), bookingsDto.size()));
     }
 
     @GetMapping("/owner")
@@ -66,6 +68,8 @@ public class BookingController {
             @RequestHeader(name = "X-Sharer-User-Id") @Positive Long userId) {
         log.info("Получен GET-запрос /bookings/owner?state={}&from={}&size={} с userId={}", state, from, size, userId);
 
-        return bookingService.getAllBookingsForAllItemsByUserId(state, from, size, userId);
+        List<BookingDto> bookingsDto = bookingService.getAllBookingsForAllItemsByUserId(state, userId);
+
+        return bookingsDto.subList(from, Math.min((from + size), bookingsDto.size()));
     }
 }

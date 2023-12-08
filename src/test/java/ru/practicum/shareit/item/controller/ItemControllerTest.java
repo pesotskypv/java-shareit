@@ -22,6 +22,9 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+
 @WebMvcTest(ItemController.class)
 public class ItemControllerTest {
 
@@ -41,7 +44,7 @@ public class ItemControllerTest {
                 .owner(UserDto.builder().id(userId).name("user").email("user@user.com").build()).requestId(null)
                 .build();
 
-        Mockito.when(itemService.createItem(userId, itemDto)).thenReturn(savedItemDto);
+        Mockito.when(itemService.createItem(eq(userId), any(ItemDtoReq.class))).thenReturn(savedItemDto);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/items")
                         .header("X-Sharer-User-Id", userId)
@@ -52,7 +55,8 @@ public class ItemControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(savedItemDto)));
 
-        Mockito.verify(itemService, Mockito.times(1)).createItem(userId, itemDto);
+        Mockito.verify(itemService, Mockito.times(1)).createItem(eq(userId),
+                any(ItemDtoReq.class));
         Mockito.verifyNoMoreInteractions(itemService);
     }
 
@@ -86,7 +90,7 @@ public class ItemControllerTest {
                 .owner(UserDto.builder().id(userId).name("user").email("user@user.com").build())
                 .request(null).lastBooking(null).nextBooking(null).comments(new ArrayList<>()).build());
 
-        Mockito.when(itemService.findItemsByUser(userId, from, size)).thenReturn(itemsDtoOwner);
+        Mockito.when(itemService.findItemsByUser(userId)).thenReturn(itemsDtoOwner);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/items")
                         .header("X-Sharer-User-Id", userId)
@@ -96,7 +100,7 @@ public class ItemControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(itemsDtoOwner)));
 
-        Mockito.verify(itemService, Mockito.times(1)).findItemsByUser(userId, from, size);
+        Mockito.verify(itemService, Mockito.times(1)).findItemsByUser(userId);
         Mockito.verifyNoMoreInteractions(itemService);
     }
 
@@ -111,7 +115,7 @@ public class ItemControllerTest {
                 .owner(UserDto.builder().id(userId).name("user").email("user@user.com").build())
                 .requestId(null).build());
 
-        Mockito.when(itemService.findItemsByText(userId, text, from, size)).thenReturn(itemsDto);
+        Mockito.when(itemService.findItemsByText(userId, text)).thenReturn(itemsDto);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/items/search")
                         .header("X-Sharer-User-Id", userId)
@@ -122,7 +126,7 @@ public class ItemControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(itemsDto)));
 
-        Mockito.verify(itemService, Mockito.times(1)).findItemsByText(userId, text, from, size);
+        Mockito.verify(itemService, Mockito.times(1)).findItemsByText(userId, text);
         Mockito.verifyNoMoreInteractions(itemService);
     }
 
@@ -136,7 +140,7 @@ public class ItemControllerTest {
                 .owner(UserDto.builder().id(userId).name("user").email("user@user.com").build())
                 .requestId(null).build();
 
-        Mockito.when(itemService.updateItem(userId, itemId, reqItemDto)).thenReturn(resItemDto);
+        Mockito.when(itemService.updateItem(eq(userId), eq(itemId), any(ItemDto.class))).thenReturn(resItemDto);
 
         mockMvc.perform(MockMvcRequestBuilders.patch("/items/" + itemId)
                         .header("X-Sharer-User-Id", userId)
@@ -147,7 +151,8 @@ public class ItemControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(resItemDto)));
 
-        Mockito.verify(itemService, Mockito.times(1)).updateItem(userId, itemId, reqItemDto);
+        Mockito.verify(itemService, Mockito.times(1)).updateItem(eq(userId), eq(itemId),
+                any(ItemDto.class));
         Mockito.verifyNoMoreInteractions(itemService);
     }
 
@@ -159,7 +164,7 @@ public class ItemControllerTest {
         CommentDto resCommentDto = CommentDto.builder().id(1L).text("Comment").authorName("user")
                 .created(LocalDateTime.of(2023, 12, 2, 16, 15)).build();
 
-        Mockito.when(itemService.addComment(userId, itemId, reqCommentDto)).thenReturn(resCommentDto);
+        Mockito.when(itemService.addComment(eq(userId), eq(itemId), any(CommentDto.class))).thenReturn(resCommentDto);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/items/" + itemId + "/comment")
                         .header("X-Sharer-User-Id", userId)
@@ -170,7 +175,8 @@ public class ItemControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(resCommentDto)));
 
-        Mockito.verify(itemService, Mockito.times(1)).addComment(userId, itemId, reqCommentDto);
+        Mockito.verify(itemService, Mockito.times(1)).addComment(eq(userId), eq(itemId),
+                any(CommentDto.class));
         Mockito.verifyNoMoreInteractions(itemService);
     }
 }

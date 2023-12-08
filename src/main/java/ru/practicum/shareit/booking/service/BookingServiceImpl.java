@@ -95,15 +95,14 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getAllBookingsByUserId(String state, Integer offset, Integer limit, Long userId) {
+    public List<BookingDto> getAllBookingsByUserId(String state, Long userId) {
         if(!userRepository.existsById(userId))
             throw new EntityNotFoundException("Попытка получения данных о бронировании несуществующим пользователем");
 
         switch (state) {
             case "ALL":
-                List<BookingDto> bookingsDto = bookingRepository.findByBookerIdOrderByStartDesc(userId).stream()
+                return bookingRepository.findByBookerIdOrderByStartDesc(userId).stream()
                         .map(bookingMapper::toBookingDto).collect(Collectors.toList());
-                return bookingsDto.subList(offset, Math.min((offset + limit), bookingsDto.size()));
             case "CURRENT":
                 return bookingRepository.findByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(userId,
                         LocalDateTime.now(), LocalDateTime.now()).stream().map(bookingMapper::toBookingDto)
@@ -126,16 +125,14 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getAllBookingsForAllItemsByUserId(String state, Integer offset, Integer limit,
-                                                              Long userId) {
+    public List<BookingDto> getAllBookingsForAllItemsByUserId(String state, Long userId) {
         if(!userRepository.existsById(userId))
             throw new EntityNotFoundException("Попытка получения данных о бронировании несуществующим пользователем");
 
         switch (state) {
             case "ALL":
-                List<BookingDto> bookingsDto = bookingRepository.findAllBookingsForAllItemsByUserId(userId).stream()
+                return bookingRepository.findAllBookingsForAllItemsByUserId(userId).stream()
                         .map(bookingMapper::toBookingDto).collect(Collectors.toList());
-                return bookingsDto.subList(offset, Math.min((offset + limit), bookingsDto.size()));
             case "CURRENT":
                 return bookingRepository.findCurrentBookingsForAllItemsByUserId(userId, LocalDateTime.now()).stream()
                         .map(bookingMapper::toBookingDto).collect(Collectors.toList());

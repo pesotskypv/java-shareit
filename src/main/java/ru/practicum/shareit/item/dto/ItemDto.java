@@ -3,10 +3,12 @@ package ru.practicum.shareit.item.dto;
 import lombok.*;
 import ru.practicum.shareit.user.dto.UserDto;
 
-@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
+@ToString
 public class ItemDto {
 
     private Long id;

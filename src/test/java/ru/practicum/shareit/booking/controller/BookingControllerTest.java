@@ -23,6 +23,9 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+
 @WebMvcTest(BookingController.class)
 public class BookingControllerTest {
 
@@ -49,7 +52,7 @@ public class BookingControllerTest {
                 .booker(UserDto.builder().id(userId).name("updateName").email("updateName@user.com").build())
                 .status(BookingStatus.WAITING).build();
 
-        Mockito.when(bookingService.createBooking(bookingDtoReq, userId)).thenReturn(bookingDto);
+        Mockito.when(bookingService.createBooking(any(BookingDtoReq.class), eq(userId))).thenReturn(bookingDto);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/bookings")
                         .header("X-Sharer-User-Id", userId)
@@ -60,8 +63,8 @@ public class BookingControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(bookingDto)));
 
-        Mockito.verify(bookingService, Mockito.times(1)).createBooking(bookingDtoReq,
-                userId);
+        Mockito.verify(bookingService, Mockito.times(1)).createBooking(any(BookingDtoReq.class),
+                eq(userId));
         Mockito.verifyNoMoreInteractions(bookingService);
     }
 
@@ -137,7 +140,7 @@ public class BookingControllerTest {
                 .booker(UserDto.builder().id(userId).name("updateName").email("updateName@user.com").build())
                 .status(BookingStatus.REJECTED).build());
 
-        Mockito.when(bookingService.getAllBookingsByUserId(state, from, size, userId)).thenReturn(bookingsDto);
+        Mockito.when(bookingService.getAllBookingsByUserId(state, userId)).thenReturn(bookingsDto);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/bookings")
                         .header("X-Sharer-User-Id", userId)
@@ -148,8 +151,7 @@ public class BookingControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(bookingsDto)));
 
-        Mockito.verify(bookingService, Mockito.times(1)).getAllBookingsByUserId(state, from,
-                size, userId);
+        Mockito.verify(bookingService, Mockito.times(1)).getAllBookingsByUserId(state, userId);
         Mockito.verifyNoMoreInteractions(bookingService);
     }
 
@@ -170,7 +172,7 @@ public class BookingControllerTest {
                 .booker(UserDto.builder().id(1L).name("updateName").email("updateName@user.com").build())
                 .status(BookingStatus.REJECTED).build());
 
-        Mockito.when(bookingService.getAllBookingsForAllItemsByUserId(state, from, size, userId)).thenReturn(bookingsDto);
+        Mockito.when(bookingService.getAllBookingsForAllItemsByUserId(state, userId)).thenReturn(bookingsDto);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/bookings/owner")
                         .header("X-Sharer-User-Id", userId)
@@ -182,7 +184,7 @@ public class BookingControllerTest {
                 .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(bookingsDto)));
 
         Mockito.verify(bookingService, Mockito.times(1)).getAllBookingsForAllItemsByUserId(state,
-                from, size, userId);
+                userId);
         Mockito.verifyNoMoreInteractions(bookingService);
     }
 }

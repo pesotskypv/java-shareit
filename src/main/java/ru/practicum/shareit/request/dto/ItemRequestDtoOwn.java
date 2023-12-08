@@ -6,10 +6,12 @@ import ru.practicum.shareit.item.dto.ItemDtoOwnReq;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
+@ToString
 public class ItemRequestDtoOwn {
 
     private Long id;

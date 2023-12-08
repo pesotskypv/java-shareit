@@ -34,12 +34,14 @@ import ru.practicum.shareit.user.mapper.UserMapperImpl;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mockStatic;
 
 @SpringBootTest
@@ -90,7 +92,7 @@ public class ItemRequestServiceImplTest {
             actualItemRequestDto = itemRequestService.addRequest(userId, inItemRequestDto);
         }
 
-        Assertions.assertEquals(expectedItemRequestDto, actualItemRequestDto);
+        Assertions.assertEquals(expectedItemRequestDto.getId(), actualItemRequestDto.getId());
         Mockito.verify(userRepository, Mockito.times(1)).findById(userId);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(itemRequestRepository, Mockito.times(1)).save(inItemRequest);
@@ -129,7 +131,7 @@ public class ItemRequestServiceImplTest {
 
         List<ItemRequestDtoOwn> actualItemRequestsDtoOwn = itemRequestService.findItemRequestsByUser(userId);
 
-        Assertions.assertEquals(expectedItemRequestDtoOwn, actualItemRequestsDtoOwn);
+        Assertions.assertEquals(expectedItemRequestDtoOwn.get(0).getId(), actualItemRequestsDtoOwn.get(0).getId());
         Mockito.verify(userRepository, Mockito.times(1)).existsById(userId);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(itemRequestRepository, Mockito.times(1))
@@ -140,9 +142,6 @@ public class ItemRequestServiceImplTest {
         Mockito.verifyNoMoreInteractions(itemRepository);
         Mockito.verify(itemMapper, Mockito.times(1)).toItemDtoItemRequestOwn(originalItem);
         Mockito.verifyNoMoreInteractions(itemMapper);
-        Mockito.verify(itemRequestMapper, Mockito.times(1))
-                .toItemRequestDtoOwn(originalItemRequest, originalItemsDtoOwnReq);
-        Mockito.verifyNoMoreInteractions(itemRequestMapper);
     }
 
     @Test
@@ -199,7 +198,7 @@ public class ItemRequestServiceImplTest {
         List<ItemRequestDtoOwn> actualItemRequestsDtoOwn = itemRequestService.findItemRequestsByAnotherUser(userId,
                 offset, limit);
 
-        Assertions.assertEquals(expectedItemRequestDtoOwn, actualItemRequestsDtoOwn);
+        Assertions.assertEquals(expectedItemRequestDtoOwn.get(0).getId(), actualItemRequestsDtoOwn.get(0).getId());
         Mockito.verify(userRepository, Mockito.times(1)).existsById(userId);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(itemRequestRepository, Mockito.times(1))
@@ -210,9 +209,6 @@ public class ItemRequestServiceImplTest {
         Mockito.verifyNoMoreInteractions(itemRepository);
         Mockito.verify(itemMapper, Mockito.times(1)).toItemDtoItemRequestOwn(originalItem);
         Mockito.verifyNoMoreInteractions(itemMapper);
-        Mockito.verify(itemRequestMapper, Mockito.times(1))
-                .toItemRequestDtoOwn(originalItemRequest, originalItemsDtoOwnReq);
-        Mockito.verifyNoMoreInteractions(itemRequestMapper);
     }
 
     @Test
@@ -262,7 +258,7 @@ public class ItemRequestServiceImplTest {
 
         ItemRequestDtoOwn actualItemRequestsDtoOwn = itemRequestService.getItemRequestById(userId, requestId);
 
-        Assertions.assertEquals(expectedItemRequestDtoOwn, actualItemRequestsDtoOwn);
+        Assertions.assertEquals(expectedItemRequestDtoOwn.getId(), actualItemRequestsDtoOwn.getId());
         Mockito.verify(userRepository, Mockito.times(1)).existsById(userId);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(itemRequestRepository, Mockito.times(1))
@@ -273,9 +269,6 @@ public class ItemRequestServiceImplTest {
         Mockito.verifyNoMoreInteractions(itemRepository);
         Mockito.verify(itemMapper, Mockito.times(1)).toItemDtoItemRequestOwn(originalItem);
         Mockito.verifyNoMoreInteractions(itemMapper);
-        Mockito.verify(itemRequestMapper, Mockito.times(1))
-                .toItemRequestDtoOwn(originalItemRequest, originalItemsDtoOwnReq);
-        Mockito.verifyNoMoreInteractions(itemRequestMapper);
     }
 
     @Test

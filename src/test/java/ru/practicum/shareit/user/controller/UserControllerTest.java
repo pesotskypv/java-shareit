@@ -19,6 +19,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static ru.practicum.shareit.utils.ResourcePool.*;
 
 @WebMvcTest(UserController.class)
@@ -36,7 +38,7 @@ public class UserControllerTest {
         UserDto userDto = read(createUserRequest, UserDto.class);
         UserDto savedUserDto = read(createdUserDto, UserDto.class);
 
-        Mockito.when(userService.createUser(userDto)).thenReturn(savedUserDto);
+        Mockito.when(userService.createUser(any(UserDto.class))).thenReturn(savedUserDto);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .content(objectMapper.writeValueAsString(userDto))
@@ -46,7 +48,7 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(savedUserDto)));
 
-        Mockito.verify(userService, Mockito.times(1)).createUser(userDto);
+        Mockito.verify(userService, Mockito.times(1)).createUser(any(UserDto.class));
         Mockito.verifyNoMoreInteractions(userService);
     }
 
@@ -87,7 +89,7 @@ public class UserControllerTest {
         UserDto userDto = read(updateNameUserRequest, UserDto.class);
         UserDto updatedUserDto = read(updatedNameUsersDto, UserDto.class);
 
-        Mockito.when(userService.updateUser(userId, userDto)).thenReturn(updatedUserDto);
+        Mockito.when(userService.updateUser(eq(userId), any(UserDto.class))).thenReturn(updatedUserDto);
 
         mockMvc.perform(MockMvcRequestBuilders.patch("/users/" + userId)
                         .content(objectMapper.writeValueAsString(userDto))
@@ -97,7 +99,7 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(updatedUserDto)));
 
-        Mockito.verify(userService, Mockito.times(1)).updateUser(userId, userDto);
+        Mockito.verify(userService, Mockito.times(1)).updateUser(eq(userId), any(UserDto.class));
         Mockito.verifyNoMoreInteractions(userService);
     }
 

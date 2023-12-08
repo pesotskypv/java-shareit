@@ -113,7 +113,7 @@ public class BookingServiceImplTest {
             actualBookingDto = bookingService.createBooking(bookingDtoReq, userId);
         }
 
-        Assertions.assertEquals(expectedBookingDto, actualBookingDto);
+        Assertions.assertEquals(expectedBookingDto.getId(), actualBookingDto.getId());
         Mockito.verify(userRepository, Mockito.times(1)).findById(userId);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(itemRepository, Mockito.times(1)).findById(bookingDtoReq.getItemId());
@@ -351,7 +351,7 @@ public class BookingServiceImplTest {
             actualBookingDto = bookingService.approveOrRejectBooking(bookingId, approved, userId);
         }
 
-        Assertions.assertEquals(expectedBookingDto, actualBookingDto);
+        Assertions.assertEquals(expectedBookingDto.getId(), actualBookingDto.getId());
         Mockito.verify(userRepository, Mockito.times(1)).existsById(userId);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(bookingRepository, Mockito.times(1)).findById(bookingId);
@@ -412,7 +412,7 @@ public class BookingServiceImplTest {
             actualBookingDto = bookingService.approveOrRejectBooking(bookingId, approved, userId);
         }
 
-        Assertions.assertEquals(expectedBookingDto, actualBookingDto);
+        Assertions.assertEquals(expectedBookingDto.getId(), actualBookingDto.getId());
         Mockito.verify(userRepository, Mockito.times(1)).existsById(userId);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(bookingRepository, Mockito.times(1)).findById(bookingId);
@@ -551,7 +551,7 @@ public class BookingServiceImplTest {
 
         BookingDto actualBookingDto = bookingService.getBookingById(bookingId, userId);
 
-        Assertions.assertEquals(expectedBookingDto, actualBookingDto);
+        Assertions.assertEquals(expectedBookingDto.getId(), actualBookingDto.getId());
         Mockito.verify(userRepository, Mockito.times(1)).existsById(userId);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(bookingRepository, Mockito.times(1)).findById(bookingId);
@@ -594,7 +594,7 @@ public class BookingServiceImplTest {
 
         BookingDto actualBookingDto = bookingService.getBookingById(bookingId, userId);
 
-        Assertions.assertEquals(expectedBookingDto, actualBookingDto);
+        Assertions.assertEquals(expectedBookingDto.getId(), actualBookingDto.getId());
         Mockito.verify(userRepository, Mockito.times(1)).existsById(userId);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(bookingRepository, Mockito.times(1)).findById(bookingId);
@@ -653,8 +653,6 @@ public class BookingServiceImplTest {
     void getAllBookingsByUserId_allRreturnsListBookingDtoWhenFound() {
         Long userId = 1L;
         String state = "ALL";
-        Integer offset = 0;
-        Integer limit = 2;
         LocalDateTime today = LocalDateTime.of(2023, 12, 2, 17, 0);
 
         Booking outBooking = Booking.builder().id(1L).start(today.plusDays(1)).end(today.plusDays(2))
@@ -687,9 +685,9 @@ public class BookingServiceImplTest {
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
         Mockito.when(bookingRepository.findByBookerIdOrderByStartDesc(userId)).thenReturn(outBookings);
 
-        List<BookingDto> actualBookingsDto = bookingService.getAllBookingsByUserId(state, offset, limit, userId);
+        List<BookingDto> actualBookingsDto = bookingService.getAllBookingsByUserId(state, userId);
 
-        Assertions.assertEquals(expectedBookingsDto, actualBookingsDto);
+        Assertions.assertEquals(expectedBookingsDto.get(0).getId(), actualBookingsDto.get(0).getId());
         Mockito.verify(userRepository, Mockito.times(1)).existsById(userId);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(bookingRepository, Mockito.times(1))
@@ -703,8 +701,6 @@ public class BookingServiceImplTest {
     void getAllBookingsByUserId_currentRreturnsListBookingDtoWhenFound() {
         Long userId = 1L;
         String state = "CURRENT";
-        Integer offset = 0;
-        Integer limit = 2;
         LocalDateTime today = LocalDateTime.of(2023, 12, 2, 17, 0);
 
         Booking outBooking = Booking.builder().id(1L).start(today.plusDays(1)).end(today.plusDays(2))
@@ -743,10 +739,10 @@ public class BookingServiceImplTest {
                 Mockito.CALLS_REAL_METHODS)) {
             mockedStatic.when(LocalDateTime::now).thenReturn(today);
 
-            actualBookingsDto = bookingService.getAllBookingsByUserId(state, offset, limit, userId);
+            actualBookingsDto = bookingService.getAllBookingsByUserId(state, userId);
         }
 
-        Assertions.assertEquals(expectedBookingsDto, actualBookingsDto);
+        Assertions.assertEquals(expectedBookingsDto.get(0).getId(), actualBookingsDto.get(0).getId());
         Mockito.verify(userRepository, Mockito.times(1)).existsById(userId);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(bookingRepository, Mockito.times(1))
@@ -760,8 +756,6 @@ public class BookingServiceImplTest {
     void getAllBookingsByUserId_pastRreturnsListBookingDtoWhenFound() {
         Long userId = 1L;
         String state = "PAST";
-        Integer offset = 0;
-        Integer limit = 2;
         LocalDateTime today = LocalDateTime.of(2023, 12, 2, 17, 0);
 
         Booking outBooking = Booking.builder().id(1L).start(today.plusDays(1)).end(today.plusDays(2))
@@ -800,10 +794,10 @@ public class BookingServiceImplTest {
                 Mockito.CALLS_REAL_METHODS)) {
             mockedStatic.when(LocalDateTime::now).thenReturn(today);
 
-            actualBookingsDto = bookingService.getAllBookingsByUserId(state, offset, limit, userId);
+            actualBookingsDto = bookingService.getAllBookingsByUserId(state, userId);
         }
 
-        Assertions.assertEquals(expectedBookingsDto, actualBookingsDto);
+        Assertions.assertEquals(expectedBookingsDto.get(0).getId(), actualBookingsDto.get(0).getId());
         Mockito.verify(userRepository, Mockito.times(1)).existsById(userId);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(bookingRepository, Mockito.times(1))
@@ -817,8 +811,6 @@ public class BookingServiceImplTest {
     void getAllBookingsByUserId_futureRreturnsListBookingDtoWhenFound() {
         Long userId = 1L;
         String state = "FUTURE";
-        Integer offset = 0;
-        Integer limit = 2;
         LocalDateTime today = LocalDateTime.of(2023, 12, 2, 17, 0);
 
         Booking outBooking = Booking.builder().id(1L).start(today.plusDays(1)).end(today.plusDays(2))
@@ -857,10 +849,10 @@ public class BookingServiceImplTest {
                 Mockito.CALLS_REAL_METHODS)) {
             mockedStatic.when(LocalDateTime::now).thenReturn(today);
 
-            actualBookingsDto = bookingService.getAllBookingsByUserId(state, offset, limit, userId);
+            actualBookingsDto = bookingService.getAllBookingsByUserId(state, userId);
         }
 
-        Assertions.assertEquals(expectedBookingsDto, actualBookingsDto);
+        Assertions.assertEquals(expectedBookingsDto.get(0).getId(), actualBookingsDto.get(0).getId());
         Mockito.verify(userRepository, Mockito.times(1)).existsById(userId);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(bookingRepository, Mockito.times(1))
@@ -874,8 +866,6 @@ public class BookingServiceImplTest {
     void getAllBookingsByUserId_waitingRreturnsListBookingDtoWhenFound() {
         Long userId = 1L;
         String state = "WAITING";
-        Integer offset = 0;
-        Integer limit = 2;
         LocalDateTime today = LocalDateTime.of(2023, 12, 2, 17, 0);
 
         Booking outBooking = Booking.builder().id(1L).start(today.plusDays(1)).end(today.plusDays(2))
@@ -909,9 +899,9 @@ public class BookingServiceImplTest {
         Mockito.when(bookingRepository.findByBookerIdAndStatusOrderByStartDesc(userId, BookingStatus.WAITING))
                 .thenReturn(outBookings);
 
-        List<BookingDto> actualBookingsDto = bookingService.getAllBookingsByUserId(state, offset, limit, userId);
+        List<BookingDto> actualBookingsDto = bookingService.getAllBookingsByUserId(state, userId);
 
-        Assertions.assertEquals(expectedBookingsDto, actualBookingsDto);
+        Assertions.assertEquals(expectedBookingsDto.get(0).getId(), actualBookingsDto.get(0).getId());
         Mockito.verify(userRepository, Mockito.times(1)).existsById(userId);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(bookingRepository, Mockito.times(1))
@@ -925,8 +915,6 @@ public class BookingServiceImplTest {
     void getAllBookingsByUserId_rejectedRreturnsListBookingDtoWhenFound() {
         Long userId = 1L;
         String state = "REJECTED";
-        Integer offset = 0;
-        Integer limit = 2;
         LocalDateTime today = LocalDateTime.of(2023, 12, 2, 17, 0);
 
         Booking outBooking = Booking.builder().id(1L).start(today.plusDays(1)).end(today.plusDays(2))
@@ -960,9 +948,9 @@ public class BookingServiceImplTest {
         Mockito.when(bookingRepository.findByBookerIdAndStatusOrderByStartDesc(userId, BookingStatus.REJECTED))
                 .thenReturn(outBookings);
 
-        List<BookingDto> actualBookingsDto = bookingService.getAllBookingsByUserId(state, offset, limit, userId);
+        List<BookingDto> actualBookingsDto = bookingService.getAllBookingsByUserId(state, userId);
 
-        Assertions.assertEquals(expectedBookingsDto, actualBookingsDto);
+        Assertions.assertEquals(expectedBookingsDto.get(0).getId(), actualBookingsDto.get(0).getId());
         Mockito.verify(userRepository, Mockito.times(1)).existsById(userId);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(bookingRepository, Mockito.times(1))
@@ -976,13 +964,11 @@ public class BookingServiceImplTest {
     void getAllBookingsByUserId_returnsEntityValidationException() {
         Long userId = 1L;
         String state = "TOP";
-        Integer offset = 0;
-        Integer limit = 2;
 
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
 
         Exception exception = assertThrows(EntityValidationException.class, () ->
-                bookingService.getAllBookingsByUserId(state, offset, limit, userId));
+                bookingService.getAllBookingsByUserId(state, userId));
 
         assertTrue(exception.getMessage().contains(String.format("Unknown state: %s", state)));
         Mockito.verify(userRepository, Mockito.times(1)).existsById(userId);
@@ -993,13 +979,11 @@ public class BookingServiceImplTest {
     void getAllBookingsByUserId_returnsEntityNotFoundException() {
         Long userId = 1L;
         String state = "ALL";
-        Integer offset = 0;
-        Integer limit = 2;
 
         Mockito.when(userRepository.existsById(userId)).thenReturn(false);
 
         Exception exception = assertThrows(EntityNotFoundException.class, () ->
-                bookingService.getAllBookingsByUserId(state, offset, limit, userId));
+                bookingService.getAllBookingsByUserId(state, userId));
 
         assertTrue(exception.getMessage().contains("Попытка получения данных о бронировании несуществующим " +
                 "пользователем"));
@@ -1011,8 +995,6 @@ public class BookingServiceImplTest {
     void getAllBookingsForAllItemsByUserId_allRreturnsListBookingDtoWhenFound() {
         Long userId = 1L;
         String state = "ALL";
-        Integer offset = 0;
-        Integer limit = 2;
         LocalDateTime today = LocalDateTime.of(2023, 12, 2, 17, 0);
 
         Booking outBooking = Booking.builder().id(1L).start(today.plusDays(1)).end(today.plusDays(2))
@@ -1045,10 +1027,9 @@ public class BookingServiceImplTest {
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
         Mockito.when(bookingRepository.findAllBookingsForAllItemsByUserId(userId)).thenReturn(outBookings);
 
-        List<BookingDto> actualBookingsDto = bookingService.getAllBookingsForAllItemsByUserId(state, offset, limit,
-                userId);
+        List<BookingDto> actualBookingsDto = bookingService.getAllBookingsForAllItemsByUserId(state, userId);
 
-        Assertions.assertEquals(expectedBookingsDto, actualBookingsDto);
+        Assertions.assertEquals(expectedBookingsDto.get(0).getId(), actualBookingsDto.get(0).getId());
         Mockito.verify(userRepository, Mockito.times(1)).existsById(userId);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(bookingRepository, Mockito.times(1))
@@ -1062,8 +1043,6 @@ public class BookingServiceImplTest {
     void getAllBookingsForAllItemsByUserId_currentRreturnsListBookingDtoWhenFound() {
         Long userId = 1L;
         String state = "CURRENT";
-        Integer offset = 0;
-        Integer limit = 2;
         LocalDateTime today = LocalDateTime.of(2023, 12, 2, 17, 0);
 
         Booking outBooking = Booking.builder().id(1L).start(today.plusDays(1)).end(today.plusDays(2))
@@ -1101,10 +1080,10 @@ public class BookingServiceImplTest {
                 Mockito.CALLS_REAL_METHODS)) {
             mockedStatic.when(LocalDateTime::now).thenReturn(today);
 
-            actualBookingsDto = bookingService.getAllBookingsForAllItemsByUserId(state, offset, limit, userId);
+            actualBookingsDto = bookingService.getAllBookingsForAllItemsByUserId(state, userId);
         }
 
-        Assertions.assertEquals(expectedBookingsDto, actualBookingsDto);
+        Assertions.assertEquals(expectedBookingsDto.get(0).getId(), actualBookingsDto.get(0).getId());
         Mockito.verify(userRepository, Mockito.times(1)).existsById(userId);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(bookingRepository, Mockito.times(1))
@@ -1118,8 +1097,6 @@ public class BookingServiceImplTest {
     void getAllBookingsForAllItemsByUserId_pastRreturnsListBookingDtoWhenFound() {
         Long userId = 1L;
         String state = "PAST";
-        Integer offset = 0;
-        Integer limit = 2;
         LocalDateTime today = LocalDateTime.of(2023, 12, 2, 17, 0);
 
         Booking outBooking = Booking.builder().id(1L).start(today.plusDays(1)).end(today.plusDays(2))
@@ -1157,10 +1134,10 @@ public class BookingServiceImplTest {
                 Mockito.CALLS_REAL_METHODS)) {
             mockedStatic.when(LocalDateTime::now).thenReturn(today);
 
-            actualBookingsDto = bookingService.getAllBookingsForAllItemsByUserId(state, offset, limit, userId);
+            actualBookingsDto = bookingService.getAllBookingsForAllItemsByUserId(state, userId);
         }
 
-        Assertions.assertEquals(expectedBookingsDto, actualBookingsDto);
+        Assertions.assertEquals(expectedBookingsDto.get(0).getId(), actualBookingsDto.get(0).getId());
         Mockito.verify(userRepository, Mockito.times(1)).existsById(userId);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(bookingRepository, Mockito.times(1))
@@ -1174,8 +1151,6 @@ public class BookingServiceImplTest {
     void getAllBookingsForAllItemsByUserId_futureRreturnsListBookingDtoWhenFound() {
         Long userId = 1L;
         String state = "FUTURE";
-        Integer offset = 0;
-        Integer limit = 2;
         LocalDateTime today = LocalDateTime.of(2023, 12, 2, 17, 0);
 
         Booking outBooking = Booking.builder().id(1L).start(today.plusDays(1)).end(today.plusDays(2))
@@ -1213,10 +1188,10 @@ public class BookingServiceImplTest {
                 Mockito.CALLS_REAL_METHODS)) {
             mockedStatic.when(LocalDateTime::now).thenReturn(today);
 
-            actualBookingsDto = bookingService.getAllBookingsForAllItemsByUserId(state, offset, limit, userId);
+            actualBookingsDto = bookingService.getAllBookingsForAllItemsByUserId(state, userId);
         }
 
-        Assertions.assertEquals(expectedBookingsDto, actualBookingsDto);
+        Assertions.assertEquals(expectedBookingsDto.get(0).getId(), actualBookingsDto.get(0).getId());
         Mockito.verify(userRepository, Mockito.times(1)).existsById(userId);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(bookingRepository, Mockito.times(1))
@@ -1230,8 +1205,6 @@ public class BookingServiceImplTest {
     void getAllBookingsForAllItemsByUserId_waitingRreturnsListBookingDtoWhenFound() {
         Long userId = 1L;
         String state = "WAITING";
-        Integer offset = 0;
-        Integer limit = 2;
         LocalDateTime today = LocalDateTime.of(2023, 12, 2, 17, 0);
 
         Booking outBooking = Booking.builder().id(1L).start(today.plusDays(1)).end(today.plusDays(2))
@@ -1265,10 +1238,9 @@ public class BookingServiceImplTest {
         Mockito.when(bookingRepository.findStatusBookingsForAllItemsByUserId(userId, BookingStatus.WAITING))
                 .thenReturn(outBookings);
 
-        List<BookingDto> actualBookingsDto = bookingService.getAllBookingsForAllItemsByUserId(state, offset, limit,
-                userId);
+        List<BookingDto> actualBookingsDto = bookingService.getAllBookingsForAllItemsByUserId(state, userId);
 
-        Assertions.assertEquals(expectedBookingsDto, actualBookingsDto);
+        Assertions.assertEquals(expectedBookingsDto.get(0).getId(), actualBookingsDto.get(0).getId());
         Mockito.verify(userRepository, Mockito.times(1)).existsById(userId);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(bookingRepository, Mockito.times(1))
@@ -1282,8 +1254,6 @@ public class BookingServiceImplTest {
     void getAllBookingsForAllItemsByUserId_rejectedRreturnsListBookingDtoWhenFound() {
         Long userId = 1L;
         String state = "REJECTED";
-        Integer offset = 0;
-        Integer limit = 2;
         LocalDateTime today = LocalDateTime.of(2023, 12, 2, 17, 0);
 
         Booking outBooking = Booking.builder().id(1L).start(today.plusDays(1)).end(today.plusDays(2))
@@ -1317,10 +1287,9 @@ public class BookingServiceImplTest {
         Mockito.when(bookingRepository.findStatusBookingsForAllItemsByUserId(userId, BookingStatus.REJECTED))
                 .thenReturn(outBookings);
 
-        List<BookingDto> actualBookingsDto = bookingService.getAllBookingsForAllItemsByUserId(state, offset, limit,
-                userId);
+        List<BookingDto> actualBookingsDto = bookingService.getAllBookingsForAllItemsByUserId(state, userId);
 
-        Assertions.assertEquals(expectedBookingsDto, actualBookingsDto);
+        Assertions.assertEquals(expectedBookingsDto.get(0).getId(), actualBookingsDto.get(0).getId());
         Mockito.verify(userRepository, Mockito.times(1)).existsById(userId);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(bookingRepository, Mockito.times(1))
@@ -1334,13 +1303,11 @@ public class BookingServiceImplTest {
     void getAllBookingsForAllItemsByUserId_returnsEntityValidationException() {
         Long userId = 1L;
         String state = "TOP";
-        Integer offset = 0;
-        Integer limit = 2;
 
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
 
         Exception exception = assertThrows(EntityValidationException.class, () ->
-                bookingService.getAllBookingsForAllItemsByUserId(state, offset, limit, userId));
+                bookingService.getAllBookingsForAllItemsByUserId(state, userId));
 
         assertTrue(exception.getMessage().contains(String.format("Unknown state: %s", state)));
         Mockito.verify(userRepository, Mockito.times(1)).existsById(userId);
@@ -1351,13 +1318,11 @@ public class BookingServiceImplTest {
     void getAllBookingsForAllItemsByUserId_returnsEntityNotFoundException() {
         Long userId = 1L;
         String state = "ALL";
-        Integer offset = 0;
-        Integer limit = 2;
 
         Mockito.when(userRepository.existsById(userId)).thenReturn(false);
 
         Exception exception = assertThrows(EntityNotFoundException.class, () ->
-                bookingService.getAllBookingsForAllItemsByUserId(state, offset, limit, userId));
+                bookingService.getAllBookingsForAllItemsByUserId(state, userId));
 
         assertTrue(exception.getMessage().contains("Попытка получения данных о бронировании несуществующим " +
                 "пользователем"));

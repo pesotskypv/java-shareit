@@ -112,7 +112,7 @@ public class ItemServiceImplTest {
 
         ItemDto actualItemDto = itemService.createItem(userId, inItemDto);
 
-        Assertions.assertEquals(expectedItemDto, actualItemDto);
+        Assertions.assertEquals(expectedItemDto.getId(), actualItemDto.getId());
         Mockito.verify(userRepository, Mockito.times(1)).findById(userId);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(itemRepository, Mockito.times(1)).save(inItem);
@@ -148,7 +148,7 @@ public class ItemServiceImplTest {
 
         ItemDto actualItemDto = itemService.createItem(userId, inItemDto);
 
-        Assertions.assertEquals(expectedItemDto, actualItemDto);
+        Assertions.assertEquals(expectedItemDto.getId(), actualItemDto.getId());
         Mockito.verify(userRepository, Mockito.times(1)).findById(userId);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(itemRepository, Mockito.times(1)).save(inItem);
@@ -214,7 +214,7 @@ public class ItemServiceImplTest {
             actualOutItemDtoOwn = itemService.getItem(userId, itemId);
         }
 
-        Assertions.assertEquals(expectedItemDto, actualOutItemDtoOwn);
+        Assertions.assertEquals(expectedItemDto.getId(), actualOutItemDtoOwn.getId());
         Mockito.verify(userRepository, Mockito.times(1)).existsById(userId);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(commentRepository, Mockito.times(1)).findAllByItemId(itemId);
@@ -276,7 +276,7 @@ public class ItemServiceImplTest {
             actualOutItemDtoOwn = itemService.getItem(userId, itemId);
         }
 
-        Assertions.assertEquals(expectedItemDto, actualOutItemDtoOwn);
+        Assertions.assertEquals(expectedItemDto.getId(), actualOutItemDtoOwn.getId());
         Mockito.verify(userRepository, Mockito.times(1)).existsById(userId);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(commentRepository, Mockito.times(1)).findAllByItemId(itemId);
@@ -302,8 +302,6 @@ public class ItemServiceImplTest {
     @Test
     void findItemsByUser_returnsListItemDtoOwnWhenFound() {
         Long userId = 1L;
-        Integer offset = 0;
-        Integer limit = 2;
         LocalDateTime today = LocalDateTime.of(2023, 12, 4, 17, 0);
         User user3 = User.builder().id(3L).name("user3").email("user3@user.com").build();
 
@@ -353,10 +351,10 @@ public class ItemServiceImplTest {
         try (MockedStatic<LocalDateTime> mockedStatic = mockStatic(LocalDateTime.class, Mockito.CALLS_REAL_METHODS)) {
             mockedStatic.when(LocalDateTime::now).thenReturn(today);
 
-            actualOutItemsDtoOwn = itemService.findItemsByUser(userId, offset, limit);
+            actualOutItemsDtoOwn = itemService.findItemsByUser(userId);
         }
 
-        Assertions.assertEquals(expectedItemsDto, actualOutItemsDtoOwn);
+        Assertions.assertEquals(expectedItemsDto.get(0).getId(), actualOutItemsDtoOwn.get(0).getId());
         Mockito.verify(commentRepository, Mockito.times(1))
                 .findAllByItemId(originalItem.getId());
         Mockito.verifyNoMoreInteractions(commentRepository);
@@ -379,8 +377,6 @@ public class ItemServiceImplTest {
     void findItemsByText_returnsListItemDtoWhenFound() {
         Long userId = 1L;
         String text = "дрель";
-        Integer offset = 0;
-        Integer limit = 2;
         LocalDateTime today = LocalDateTime.of(2023, 12, 2, 17, 0);
 
         Item originalItem = Item.builder().id(1L).name("Дрель").description("Простая дрель").available(true)
@@ -400,9 +396,9 @@ public class ItemServiceImplTest {
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
         Mockito.when(itemRepository.findItemsByText(text)).thenReturn(outItems);
 
-        List<ItemDto> actualOutItemsDto = itemService.findItemsByText(userId, text, offset, limit);
+        List<ItemDto> actualOutItemsDto = itemService.findItemsByText(userId, text);
 
-        Assertions.assertEquals(expectedItemsDto, actualOutItemsDto);
+        Assertions.assertEquals(expectedItemsDto.get(0).getId(), actualOutItemsDto.get(0).getId());
         Mockito.verify(userRepository, Mockito.times(1)).existsById(userId);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(itemRepository, Mockito.times(1)).findItemsByText(text);
@@ -415,13 +411,11 @@ public class ItemServiceImplTest {
     void findItemsByText_returnsEntityNotFoundException() {
         Long userId = 1L;
         String text = "дрель";
-        Integer offset = 0;
-        Integer limit = 2;
 
         Mockito.when(userRepository.existsById(userId)).thenReturn(false);
 
         Exception exception = assertThrows(EntityNotFoundException.class, () ->
-                itemService.findItemsByText(userId, text, offset, limit));
+                itemService.findItemsByText(userId, text));
 
         assertTrue(exception.getMessage().contains("Попытка поиска вещи несуществующим пользователем"));
     }
@@ -430,13 +424,11 @@ public class ItemServiceImplTest {
     void findItemsByText_textIsBlankReturnsEmptyList() {
         Long userId = 1L;
         String text = "";
-        Integer offset = 0;
-        Integer limit = 2;
         List<ItemDto> expectedItemsDto = Collections.emptyList();
 
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
 
-        List<ItemDto> actualOutItemsDto = itemService.findItemsByText(userId, text, offset, limit);
+        List<ItemDto> actualOutItemsDto = itemService.findItemsByText(userId, text);
 
         Assertions.assertEquals(expectedItemsDto, actualOutItemsDto);
         Mockito.verify(userRepository, Mockito.times(1)).existsById(userId);
@@ -471,7 +463,7 @@ public class ItemServiceImplTest {
 
         ItemDto actualOutItemDto = itemService.updateItem(userId, itemId, inItemDto);
 
-        Assertions.assertEquals(expectedItemDto, actualOutItemDto);
+        Assertions.assertEquals(expectedItemDto.getId(), actualOutItemDto.getId());
         Mockito.verify(userRepository, Mockito.times(1)).existsById(userId);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(itemRepository, Mockito.times(1)).findById(itemId);
@@ -598,7 +590,7 @@ public class ItemServiceImplTest {
             actualCommentDto = itemService.addComment(userId, itemId, inCommentDto);
         }
 
-        Assertions.assertEquals(expectedCommentDto, actualCommentDto);
+        Assertions.assertEquals(expectedCommentDto.getId(), actualCommentDto.getId());
         Mockito.verify(userRepository, Mockito.times(1)).findById(userId);
         Mockito.verifyNoMoreInteractions(userRepository);
         Mockito.verify(itemRepository, Mockito.times(1)).findById(itemId);

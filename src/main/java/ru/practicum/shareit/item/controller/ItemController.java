@@ -47,7 +47,9 @@ public class ItemController {
             @RequestHeader(name = "X-Sharer-User-Id") @Positive Long userId) {
         log.info("Получен GET-запрос /items?from={}&size={} с userId={}", from, size, userId);
 
-        return itemService.findItemsByUser(userId, from, size);
+        List<ItemDtoOwn> itemsDtoOwner = itemService.findItemsByUser(userId);
+
+        return itemsDtoOwner.subList(from, Math.min((from + size), itemsDtoOwner.size()));
     }
 
     @GetMapping("/search")
@@ -58,7 +60,9 @@ public class ItemController {
             @RequestHeader(name = "X-Sharer-User-Id") @Positive Long userId) {
         log.info("Получен GET-запрос /items/search?text={}&from={}&size={} с userId={}", text, from, size, userId);
 
-        return itemService.findItemsByText(userId, text, from, size);
+        List<ItemDto> itemsDto = itemService.findItemsByText(userId, text);
+
+        return itemsDto.subList(from, Math.min((from + size), itemsDto.size()));
     }
 
     @PatchMapping("/{itemId}")

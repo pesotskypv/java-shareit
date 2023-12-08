@@ -22,6 +22,9 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+
 @WebMvcTest(ItemRequestController.class)
 public class ItemRequestControllerTest {
 
@@ -35,25 +38,27 @@ public class ItemRequestControllerTest {
     @Test
     void createBooking() throws Exception {
         Long userId = 1L;
-        ItemRequestDto ReqItemRequestDto = ItemRequestDto.builder()
+        ItemRequestDto reqItemRequestDto = ItemRequestDto.builder()
                 .description("Хотел бы воспользоваться щёткой для обуви").build();
         ItemRequestDto ResItemRequestDto = ItemRequestDto.builder().id(1L)
                 .description("Хотел бы воспользоваться щёткой для обуви")
                 .requestor(UserDto.builder().id(1L).name("user").email("user@user.com").build())
                 .created(LocalDateTime.of(2023, 12, 3, 17, 0)).build();
 
-        Mockito.when(itemRequestService.addRequest(userId, ReqItemRequestDto)).thenReturn(ResItemRequestDto);
+        Mockito.when(itemRequestService.addRequest(eq(userId), any(ItemRequestDto.class)))
+                .thenReturn(ResItemRequestDto);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/requests")
                         .header("X-Sharer-User-Id", userId)
-                        .content(objectMapper.writeValueAsString(ReqItemRequestDto))
+                        .content(objectMapper.writeValueAsString(reqItemRequestDto))
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(ResItemRequestDto)));
 
-        Mockito.verify(itemRequestService, Mockito.times(1)).addRequest(userId, ReqItemRequestDto);
+        Mockito.verify(itemRequestService, Mockito.times(1)).addRequest(eq(userId),
+                any(ItemRequestDto.class));
         Mockito.verifyNoMoreInteractions(itemRequestService);
     }
 

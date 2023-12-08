@@ -2,10 +2,12 @@ package ru.practicum.shareit.item.dto;
 
 import lombok.*;
 
-@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
+@ToString
 public class ItemDtoOwnReq {
 
     private Long id;

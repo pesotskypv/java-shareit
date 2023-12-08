@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dao.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.BookingDtoRequest;
+import ru.practicum.shareit.booking.dto.BookingDtoReq;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
@@ -31,13 +31,13 @@ public class BookingServiceImpl implements BookingService {
     private final ItemRepository itemRepository;
 
     @Override
-    public BookingDto createBooking(BookingDtoRequest bookingDtoRequest, Long userId) {
+    public BookingDto createBooking(BookingDtoReq bookingDtoReq, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Попытка аренды вещи несуществующим пользователем"));
-        Item item = itemRepository.findById(bookingDtoRequest.getItemId())
+        Item item = itemRepository.findById(bookingDtoReq.getItemId())
                 .orElseThrow(() -> new EntityNotFoundException("Попытка арендовать несуществующую вещь"));
-        LocalDateTime start = bookingDtoRequest.getStart();
-        LocalDateTime end = bookingDtoRequest.getEnd();
+        LocalDateTime start = bookingDtoReq.getStart();
+        LocalDateTime end = bookingDtoReq.getEnd();
 
         if (userId.equals(item.getOwner().getId()))
             throw new EntityNotFoundException("Нельзя арендовать собсьвенную вещь");
@@ -95,14 +95,15 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getAllBookingsByUserId(String state, Long userId) {
+    public List<BookingDto> getAllBookingsByUserId(String state, Integer offset, Integer limit, Long userId) {
         if(!userRepository.existsById(userId))
             throw new EntityNotFoundException("Попытка получения данных о бронировании несуществующим пользователем");
 
         switch (state) {
             case "ALL":
-                return bookingRepository.findByBookerIdOrderByStartDesc(userId).stream()
+                List<BookingDto> bookingsDto = bookingRepository.findByBookerIdOrderByStartDesc(userId).stream()
                         .map(bookingMapper::toBookingDto).collect(Collectors.toList());
+                return bookingsDto.subList(offset, Math.min((offset + limit), bookingsDto.size()));
             case "CURRENT":
                 return bookingRepository.findByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(userId,
                         LocalDateTime.now(), LocalDateTime.now()).stream().map(bookingMapper::toBookingDto)
@@ -125,14 +126,16 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getAllBookingsForAllItemsByUserId(String state, Long userId) {
+    public List<BookingDto> getAllBookingsForAllItemsByUserId(String state, Integer offset, Integer limit,
+                                                              Long userId) {
         if(!userRepository.existsById(userId))
             throw new EntityNotFoundException("Попытка получения данных о бронировании несуществующим пользователем");
 
         switch (state) {
             case "ALL":
-                return bookingRepository.findAllBookingsForAllItemsByUserId(userId).stream()
+                List<BookingDto> bookingsDto = bookingRepository.findAllBookingsForAllItemsByUserId(userId).stream()
                         .map(bookingMapper::toBookingDto).collect(Collectors.toList());
+                return bookingsDto.subList(offset, Math.min((offset + limit), bookingsDto.size()));
             case "CURRENT":
                 return bookingRepository.findCurrentBookingsForAllItemsByUserId(userId, LocalDateTime.now()).stream()
                         .map(bookingMapper::toBookingDto).collect(Collectors.toList());

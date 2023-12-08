@@ -5,15 +5,13 @@ import lombok.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-@ToString
-public class BookingDtoRequest {
+public class BookingDtoReq {
 
-    private Long ItemId;
+    private Long itemId;
 
     @NotNull
     private LocalDateTime start;

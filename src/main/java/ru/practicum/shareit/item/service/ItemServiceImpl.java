@@ -11,18 +11,19 @@ import ru.practicum.shareit.item.dao.CommentRepository;
 import ru.practicum.shareit.item.dao.ItemRepository;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemDtoOwner;
+import ru.practicum.shareit.item.dto.ItemDtoOwn;
+import ru.practicum.shareit.item.dto.ItemDtoReq;
 import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
-import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.dao.ItemRequestRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.exception.EntityForbiddenException;
 import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -40,54 +41,51 @@ public class ItemServiceImpl implements ItemService {
     private final BookingMapper bookingMapper;
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
+    private final ItemRequestRepository itemRequestRepository;
 
     @Override
-    public ItemDto createItem(Long userId, ItemDto itemDto) {
+    public ItemDto createItem(Long userId, ItemDtoReq itemDtoReq) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Попытка добавить вещь несуществующим владельцем"));
-        Item item = itemMapper.toItem(itemDto);
-        item.setOwner(user);
+        Item item = itemMapper.toItem(itemDtoReq, user);
+        Long requestId = itemDtoReq.getRequestId();
+
+        if (requestId != null) {
+            ItemRequest itemRequest = itemRequestRepository.findById(requestId)
+                    .orElseThrow(() -> new EntityNotFoundException("Попытка добавить вещь с несуществующим его " +
+                            "запросом"));
+
+            item.setRequest(itemRequest);
+        }
 
         return itemMapper.toItemDto(itemRepository.save(item));
     }
 
     @Override
-    public ItemDtoOwner getItem(Long userId, Long itemId) {
+    public ItemDtoOwn getItem(Long userId, Long itemId) {
         if(!userRepository.existsById(userId))
             throw new EntityNotFoundException("Попытка получить вещь несуществующим владельцем");
 
-        List<Comment> comments = commentRepository.findAllByItemId(itemId);
+        ItemDtoOwn itemDtoOwn = itemMapper.toItemDtoOwner(itemRepository.findById(itemId)
+                .orElseThrow(() -> new EntityNotFoundException("Попытка получить несуществующую вещь")),
+                commentRepository.findAllByItemId(itemId));
 
-        if (comments == null) comments = new ArrayList<>();
+        if (itemDtoOwn.getOwner().getId().equals(userId)) addLastAndNextBookingsToItemDtoOwner(itemDtoOwn);
 
-        ItemDtoOwner itemDtoOwner = itemMapper.toItemDtoOwner(itemRepository.findById(itemId)
-                .orElseThrow(() -> new EntityNotFoundException("Попытка получить несуществующую вещь")), comments);
-
-        if (itemDtoOwner.getOwner().getId().equals(userId)) addLastAndNextBookingsToItemDtoOwner(itemDtoOwner);
-
-        return itemDtoOwner;
+        return itemDtoOwn;
     }
 
     @Override
-    public List<ItemDtoOwner> findItemsByUser(Long userId) {
-        List<ItemDtoOwner> itemDtoOwners = itemRepository.findItemsByOwnerId(userId).stream()
-                .map(i -> {
-                    List<Comment> comments = commentRepository.findAllByItemId(i.getId());
+    public List<ItemDtoOwn> findItemsByUser(Long userId, Integer offset, Integer limit) {
+        List<ItemDtoOwn> itemsDtoOwner = itemRepository.findItemsByOwnerId(userId).stream().map(i ->
+                itemMapper.toItemDtoOwner(i, commentRepository.findAllByItemId(i.getId())))
+                .peek(this::addLastAndNextBookingsToItemDtoOwner).collect(Collectors.toList());
 
-                    if (comments == null) comments = new ArrayList<>();
-
-                    return itemMapper.toItemDtoOwner(i, comments);
-                }).collect(Collectors.toList());
-
-        for (ItemDtoOwner itemDtoOwner : itemDtoOwners) {
-            addLastAndNextBookingsToItemDtoOwner(itemDtoOwner);
-        }
-
-        return itemDtoOwners;
+        return itemsDtoOwner.subList(offset, Math.min((offset + limit), itemsDtoOwner.size()));
     }
 
     @Override
-    public List<ItemDto> findItemsByText(Long userId, String text) {
+    public List<ItemDto> findItemsByText(Long userId, String text, Integer offset, Integer limit) {
         List<ItemDto> itemDtos = Collections.emptyList();
 
         if(!userRepository.existsById(userId))
@@ -97,24 +95,11 @@ public class ItemServiceImpl implements ItemService {
             itemDtos = itemRepository.findItemsByText(text).stream()
                     .map(itemMapper::toItemDto).collect(Collectors.toList());
 
-        return itemDtos;
+        return itemDtos.subList(offset, Math.min((offset + limit), itemDtos.size()));
     }
 
     @Override
     public ItemDto updateItem(Long userId, Long itemId, ItemDto itemDto) {
-        if(!userRepository.existsById(userId))
-            throw new EntityNotFoundException("Попытка отредактировать вещь несуществующим владельцем");
-
-        Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new EntityNotFoundException("Попытка отредактировать несуществующую вещь"));
-
-        if (!Objects.equals(userId, item.getOwner().getId())) {
-            String textError = "Попытка отредактировать вещь пользователем не являющимся её владельцем";
-
-            log.debug(textError);
-            throw new EntityForbiddenException(textError);
-        }
-
         String name = itemDto.getName();
         String description = itemDto.getDescription();
         Boolean available = itemDto.getAvailable();
@@ -130,6 +115,18 @@ public class ItemServiceImpl implements ItemService {
 
             log.debug("Валидация не пройдена: " + textError);
             throw new EntityValidationException(textError);
+        }
+        if(!userRepository.existsById(userId))
+            throw new EntityNotFoundException("Попытка отредактировать вещь несуществующим владельцем");
+
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new EntityNotFoundException("Попытка отредактировать несуществующую вещь"));
+
+        if (!Objects.equals(userId, item.getOwner().getId())) {
+            String textError = "Попытка отредактировать вещь пользователем не являющимся её владельцем";
+
+            log.debug(textError);
+            throw new EntityForbiddenException(textError);
         }
         if (name != null) item.setName(name);
         if (description != null) item.setDescription(description);
@@ -158,12 +155,12 @@ public class ItemServiceImpl implements ItemService {
                 LocalDateTime.now())));
     }
 
-    private void addLastAndNextBookingsToItemDtoOwner(ItemDtoOwner itemDtoOwner) {
-        itemDtoOwner.setLastBooking(bookingMapper.toBookingDtoOwner(bookingRepository
-                .findFirstByItemIdAndStartBeforeAndStatusOrderByStartDesc(itemDtoOwner.getId(), LocalDateTime.now(),
+    private void addLastAndNextBookingsToItemDtoOwner(ItemDtoOwn itemDtoOwn) {
+        itemDtoOwn.setLastBooking(bookingMapper.toBookingDtoOwner(bookingRepository
+                .findFirstByItemIdAndStartBeforeAndStatusOrderByStartDesc(itemDtoOwn.getId(), LocalDateTime.now(),
                         BookingStatus.APPROVED)));
-        itemDtoOwner.setNextBooking(bookingMapper.toBookingDtoOwner(bookingRepository
-                .findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(itemDtoOwner.getId(), LocalDateTime.now(),
+        itemDtoOwn.setNextBooking(bookingMapper.toBookingDtoOwner(bookingRepository
+                .findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(itemDtoOwn.getId(), LocalDateTime.now(),
                         BookingStatus.APPROVED)));
     }
 }

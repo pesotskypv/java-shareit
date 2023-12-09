@@ -8,7 +8,7 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-public class BookingDtoOwner {
+public class BookingDtoOwn {
 
     private Long id;
 

@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dao.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.BookingDtoRequest;
+import ru.practicum.shareit.booking.dto.BookingDtoReq;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
@@ -31,13 +31,13 @@ public class BookingServiceImpl implements BookingService {
     private final ItemRepository itemRepository;
 
     @Override
-    public BookingDto createBooking(BookingDtoRequest bookingDtoRequest, Long userId) {
+    public BookingDto createBooking(BookingDtoReq bookingDtoReq, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Попытка аренды вещи несуществующим пользователем"));
-        Item item = itemRepository.findById(bookingDtoRequest.getItemId())
+        Item item = itemRepository.findById(bookingDtoReq.getItemId())
                 .orElseThrow(() -> new EntityNotFoundException("Попытка арендовать несуществующую вещь"));
-        LocalDateTime start = bookingDtoRequest.getStart();
-        LocalDateTime end = bookingDtoRequest.getEnd();
+        LocalDateTime start = bookingDtoReq.getStart();
+        LocalDateTime end = bookingDtoReq.getEnd();
 
         if (userId.equals(item.getOwner().getId()))
             throw new EntityNotFoundException("Нельзя арендовать собсьвенную вещь");

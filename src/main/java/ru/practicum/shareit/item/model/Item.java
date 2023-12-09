@@ -6,14 +6,12 @@ import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 
+@Data
 @Entity
 @Table(name = "items")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-@ToString
 public class Item {
 
     @Id

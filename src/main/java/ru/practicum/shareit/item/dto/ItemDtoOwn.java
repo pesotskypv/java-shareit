@@ -1,7 +1,7 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.*;
-import ru.practicum.shareit.booking.dto.BookingDtoOwner;
+import ru.practicum.shareit.booking.dto.BookingDtoOwn;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.user.dto.UserDto;
 
@@ -15,7 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class ItemDtoOwner {
+public class ItemDtoOwn {
 
     private Long id;
 
@@ -32,9 +32,9 @@ public class ItemDtoOwner {
 
     private ItemRequestDto request;
 
-    private BookingDtoOwner lastBooking;
+    private BookingDtoOwn lastBooking;
 
-    private BookingDtoOwner nextBooking;
+    private BookingDtoOwn nextBooking;
 
     private List<CommentDto> comments;
 }

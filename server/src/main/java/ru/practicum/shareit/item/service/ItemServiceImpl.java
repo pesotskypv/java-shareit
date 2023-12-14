@@ -25,6 +25,7 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -79,7 +80,8 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDtoOwn> findItemsByUser(Long userId) {
         return itemRepository.findItemsByOwnerId(userId).stream().map(i ->
                 itemMapper.toItemDtoOwner(i, commentRepository.findAllByItemId(i.getId())))
-                .peek(this::addLastAndNextBookingsToItemDtoOwner).collect(Collectors.toList());
+                .peek(this::addLastAndNextBookingsToItemDtoOwner).sorted(Comparator.comparing(ItemDtoOwn::getId))
+                .collect(Collectors.toList());
     }
 
     @Override

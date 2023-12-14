@@ -341,7 +341,7 @@ public class ItemServiceImplTest {
                 .build());
 
         Mockito.when(commentRepository.findAllByItemId(originalItem.getId())).thenReturn(comments);
-        Mockito.when(itemRepository.findItemsByOwnerIdOrderByOwnerIdAsc(userId)).thenReturn(originalItems);
+        Mockito.when(itemRepository.findItemsByOwnerId(userId)).thenReturn(originalItems);
         Mockito.when(bookingRepository.findFirstByItemIdAndStartBeforeAndStatusOrderByStartDesc(originalItem.getId(),
                 today, BookingStatus.APPROVED)).thenReturn(lastBooking);
         Mockito.when(bookingRepository.findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(originalItem.getId(),
@@ -358,7 +358,7 @@ public class ItemServiceImplTest {
         Mockito.verify(commentRepository, Mockito.times(1))
                 .findAllByItemId(originalItem.getId());
         Mockito.verifyNoMoreInteractions(commentRepository);
-        Mockito.verify(itemRepository, Mockito.times(1)).findItemsByOwnerIdOrderByOwnerIdAsc(userId);
+        Mockito.verify(itemRepository, Mockito.times(1)).findItemsByOwnerId(userId);
         Mockito.verifyNoMoreInteractions(itemRepository);
         Mockito.verify(itemMapper, Mockito.times(1)).toItemDtoOwner(originalItem, comments);
         Mockito.verify(bookingRepository, Mockito.times(1))

@@ -77,7 +77,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDtoOwn> findItemsByUser(Long userId) {
-        return itemRepository.findItemsByOwnerIdOrderByOwnerIdAsc(userId).stream().map(i ->
+        return itemRepository.findItemsByOwnerId(userId).stream().map(i ->
                 itemMapper.toItemDtoOwner(i, commentRepository.findAllByItemId(i.getId())))
                 .peek(this::addLastAndNextBookingsToItemDtoOwner).collect(Collectors.toList());
     }
